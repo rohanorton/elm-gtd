@@ -24,6 +24,8 @@ cssNamespace =
 
 type CssClasses
   = Item
+  | Checkbox
+  | Input
 
 
 blue =
@@ -40,9 +42,21 @@ css =
         [ backgroundColor blue ]
     , (.)
         Item
-        [ backgroundColor white
-        , maxWidth (px 100)
-        , color blue
+        [ displayFlex
+        , backgroundColor white
+        , margin (px 10)
+        , borderRadius (px 3)
+        , maxWidth (pct 100)
+        ]
+    , (.)
+        Input
+        [ color blue
+        , Css.width (pct 100)
+        ]
+    , (.)
+        Checkbox
+        [ marginLeft (px 5)
+        , marginRight (px 10)
         ]
     ]
 
@@ -103,6 +117,7 @@ view address model =
         []
         [ input
             [ type' "checkbox"
+            , class [ Checkbox ]
             , Html.Attributes.checked model.done
             , onClick address Check
             ]
@@ -110,6 +125,7 @@ view address model =
         ]
     , div
         [ contenteditable True
+        , class [ Input ]
         , getStyle model.done
         , on "blur" targetText (Signal.message address << Update)
         ]
