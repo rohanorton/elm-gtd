@@ -91,7 +91,7 @@ type Action
 
 update : Action -> Model -> Model
 update action model =
-  case Debug.log "actionType" action of
+  case action of
     Update content ->
       { model | content = content }
 
