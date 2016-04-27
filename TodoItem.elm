@@ -4,6 +4,48 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Json.Decode
+import Html.CssHelpers
+import Css exposing (..)
+import Css.Namespace exposing (namespace)
+import Css.Elements as Css
+import Util
+
+
+-- CSS
+
+
+{ class, classList, id } =
+  Html.CssHelpers.withNamespace cssNamespace
+
+
+cssNamespace =
+  "TodoItem"
+
+
+type CssClasses
+  = Item
+
+
+blue =
+  rgb 9 69 162
+
+
+white =
+  rgb 255 255 255
+
+
+css =
+  (stylesheet << namespace cssNamespace)
+    [ Css.body
+        [ backgroundColor blue ]
+    , (.)
+        Item
+        [ backgroundColor white
+        , maxWidth (px 100)
+        , color blue
+        ]
+    ]
+
 
 
 -- Model
@@ -55,13 +97,17 @@ targetText =
 view : Signal.Address Action -> Model -> Html
 view address model =
   div
-    []
-    [ input
-        [ type' "checkbox"
-        , checked model.done
-        , onClick address Check
-        ]
+    [ class [ Item ] ]
+    [ Util.stylesheetLink "./styles.css"
+    , div
         []
+        [ input
+            [ type' "checkbox"
+            , Html.Attributes.checked model.done
+            , onClick address Check
+            ]
+            []
+        ]
     , div
         [ contenteditable True
         , getStyle model.done
