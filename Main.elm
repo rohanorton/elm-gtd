@@ -1,9 +1,12 @@
-import TodoItem exposing (init, update, view)
+module Main (..) where
+
+import TodoItems exposing (init, update, view)
 import StartApp.Simple exposing (start)
+
 
 main =
   start
-  { model = init
-  , update = update
-  , view = view
-  }
+    { model = init
+    , update = update
+    , view = view
+    }
