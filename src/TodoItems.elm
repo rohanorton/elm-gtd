@@ -108,7 +108,7 @@ view address model =
       button [ onClick address Insert ] [ text "Add" ]
 
     stylesheet =
-      Util.stylesheetLink "./styles.css"
+      Util.stylesheetLink "../css/styles.css"
   in
     div
       []

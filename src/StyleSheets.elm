@@ -20,7 +20,7 @@ compileStylesheets =
 port files : CssFileStructure
 port files =
   Css.File.toFileStructure
-    [ ( "styles.css"
+    [ ( "css/styles.css"
       , compileStylesheets
           [ TodoItem.css
           , TodoItems.css
