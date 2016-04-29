@@ -5,3 +5,4 @@ repl-temp-*
 elm.js
 styles.css
 node_modules
+npm-debug.log
