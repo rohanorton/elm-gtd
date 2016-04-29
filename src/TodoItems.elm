@@ -1,6 +1,8 @@
 module TodoItems (..) where
 
-import TodoItem as Item exposing (..)
+import TodoItem.View
+import TodoItem.Model
+import TodoItem.Update
 import Html exposing (..)
 import Html.Events exposing (..)
 import Html.CssHelpers
@@ -48,7 +50,7 @@ css =
 
 
 type alias Model =
-  { items : List ( ID, Item.Model )
+  { items : List ( ID, TodoItem.Model.Model )
   , nextId : ID
   }
 
@@ -71,7 +73,7 @@ init =
 type Action
   = Insert
   | Remove ID
-  | Modify ID Item.Action
+  | Modify ID TodoItem.Update.Action
 
 
 update : Action -> Model -> Model
@@ -79,7 +81,7 @@ update action model =
   case action of
     Insert ->
       { model
-        | items = ( model.nextId, Item.init ) :: model.items
+        | items = ( model.nextId, TodoItem.Model.init ) :: model.items
         , nextId = model.nextId + 1
       }
 
@@ -92,7 +94,7 @@ update action model =
       let
         updateItem ( itemId, item ) =
           if itemId == id then
-            ( itemId, Item.update itemAction item )
+            ( itemId, TodoItem.Update.update itemAction item )
           else
             ( itemId, item )
       in
@@ -119,12 +121,12 @@ view address model =
       ]
 
 
-viewItem : Signal.Address Action -> ( ID, Item.Model ) -> Html
+viewItem : Signal.Address Action -> ( ID, TodoItem.Model.Model ) -> Html
 viewItem address ( id, model ) =
   let
     context =
-      Item.Context
+      TodoItem.View.Context
         (Signal.forwardTo address (Modify id))
         (Signal.forwardTo address (always (Remove id)))
   in
-    Item.view context model
+    TodoItem.View.view context model
