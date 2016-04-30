@@ -9,6 +9,13 @@ cssNamespace =
   "TodoItem"
 
 
+type CssClasses
+  = Item
+  | Checkbox
+  | Input
+  | Done
+
+
 white : Color
 white =
   rgb 255 255 255
@@ -22,13 +29,6 @@ blue =
 gray : Color
 gray =
   rgb 98 98 98
-
-
-type CssClasses
-  = Item
-  | Checkbox
-  | Input
-  | Done
 
 
 css : Stylesheet

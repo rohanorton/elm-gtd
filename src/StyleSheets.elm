@@ -3,7 +3,7 @@ module Stylesheets (..) where
 import Css exposing (Stylesheet)
 import Css.File exposing (CssFileStructure)
 import TodoItem.Styles
-import TodoItems
+import TodoItems.Styles
 
 
 compileStylesheets : List Stylesheet -> { css : String, warnings : List String }
@@ -23,7 +23,7 @@ port files =
     [ ( "css/styles.css"
       , compileStylesheets
           [ TodoItem.Styles.css
-          , TodoItems.css
+          , TodoItems.Styles.css
           ]
       )
     ]
