@@ -1,12 +1,9 @@
 {
-  "name": "y",
+  "name": "elm-gtd",
   "version": "1.0.0",
-  "description": "",
   "main": "elm.js",
   "scripts": {
-    "start": "npm run serve & onchange 'src/*.elm' -- npm run build:css ",
-    "serve": "elm reactor",
-    "build:css": "elm css src/StyleSheets.elm"
+    "start": "elm-live src/Main.elm --output elm.js --open"
   },
   "repository": {
     "type": "git",
@@ -19,6 +16,10 @@
   },
   "homepage": "https://github.com/rohanorton/elm-gtd#readme",
   "dependencies": {
-    "onchange": "^2.4.0"
-  }
+  },
+  "devDependencies": {
+    "elm": "^0.16.0",
+    "elm-live": "^2.2.1"
+  },
+  "description": ""
 }

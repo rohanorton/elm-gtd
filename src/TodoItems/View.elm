@@ -5,15 +5,9 @@ import TodoItem.Model
 import TodoItem.Update
 import TodoItems.Model exposing (..)
 import TodoItems.Update exposing (..)
-import TodoItems.Styles exposing (..)
 import Html exposing (..)
+import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-import Html.CssHelpers
-import Util
-
-
-{ class, classList, id } =
-  Html.CssHelpers.withNamespace cssNamespace
 
 
 view : Signal.Address Action -> Model -> Html
@@ -21,15 +15,11 @@ view address model =
   let
     insert =
       button [ onClick address Insert ] [ text "Add" ]
-
-    stylesheet =
-      Util.stylesheetLink "../css/styles.css"
   in
     div
       []
-      [ stylesheet
-      , div
-          [ class [ Container ] ]
+      [ div
+          [ class "container" ]
           (insert :: List.map (viewItem address) model.items)
       ]
 

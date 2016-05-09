@@ -1,0 +1,31 @@
+body {
+    background-color: rgb(9, 69, 162);
+}
+
+.container {
+    margin: auto;
+    max-width: 300px;
+    padding: 25px;
+}
+
+.item {
+    display: flex;
+    margin: 10px;
+    border-radius: 3px;
+    max-width: 100%;
+    background-color: rgb(255, 255, 255);
+}
+
+.done {
+    text-decoration: line-through;
+    color: rgb(98, 98, 98);
+}
+
+.input {
+    width: 100%;
+}
+
+.checkbox {
+    margin-left: 5px;
+    margin-right: 10px;
+}

@@ -1,17 +1,11 @@
 module TodoItem.View (..) where
 
 import TodoItem.Update exposing (..)
-import TodoItem.Styles exposing (..)
 import TodoItem.Model exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-import Html.CssHelpers
 import Json.Decode
-
-
-{ class, classList, id } =
-  Html.CssHelpers.withNamespace cssNamespace
 
 
 type alias Context =
@@ -30,17 +24,17 @@ view ctx model =
   let
     classes =
       if model.done then
-        [ Done, Input ]
+        "done input"
       else
-        [ Input ]
+        "input"
   in
     div
-      [ class [ Item ] ]
+      [ class "item" ]
       [ div
           []
           [ input
               [ type' "checkbox"
-              , class [ Checkbox ]
+              , class "checkbox"
               , Html.Attributes.checked model.done
               , onClick ctx.actions Check
               ]
