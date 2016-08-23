@@ -1,10 +1,12 @@
-module Main exposing (..)
+module Todo exposing (..)
 
 import Html exposing (..)
-import Html.Attributes exposing (style, type', value)
-import Html.Events exposing (onClick)
+import Html.Keyed as Keyed
+import Html.Attributes exposing (style, type', value, draggable)
+import Html.Events exposing (on, onWithOptions, onClick, targetValue)
 import Html.App
 import Json.Decode as Json
+import List.Extra as List
 
 
 main : Program Never
@@ -23,7 +25,6 @@ main =
 
 type alias Model =
     { todos : Todos
-    , isOver : Maybe String
     , isDragging : Maybe String
     }
 
@@ -41,7 +42,6 @@ type alias Todo =
     , priority : Int
     , due : Maybe Float
     , delegated : Maybe String
-    , isDragging : Bool
     }
 
 
@@ -55,7 +55,6 @@ defaultTodo =
     , priority = 0
     , due = Nothing
     , delegated = Nothing
-    , isDragging = False
     }
 
 
@@ -70,7 +69,6 @@ initialTodos =
 init : ( Model, Cmd Msg )
 init =
     { todos = initialTodos
-    , isOver = Nothing
     , isDragging = Nothing
     }
         ! []
@@ -82,6 +80,42 @@ init =
 
 type Msg
     = Toggle String
+    | StartDragging String
+    | StopDragging
+    | IsOver String
+
+
+insertAt : Int -> a -> List a -> List a
+insertAt index elem list =
+    if index == 0 then
+        elem :: list
+    else
+        case list of
+            [] ->
+                []
+
+            head :: tail ->
+                head :: insertAt (index - 1) elem tail
+
+
+moveTo : Int -> Int -> List a -> List a
+moveTo startIndex destIndex list =
+    let
+        maybeElem =
+            list
+                |> List.getAt startIndex
+
+        setElemToNewPosition xs =
+            maybeElem
+                |> Maybe.map (\x -> insertAt destIndex x xs)
+                |> Maybe.withDefault xs
+    in
+        if destIndex >= List.length list then
+            list
+        else
+            list
+                |> List.removeAt startIndex
+                |> setElemToNewPosition
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -93,6 +127,39 @@ update msg model =
                     toggleDone id model.todos
             in
                 { model | todos = newTodos } ! []
+
+        StartDragging id ->
+            { model | isDragging = Just id } ! []
+
+        StopDragging ->
+            { model | isDragging = Nothing } ! []
+
+        IsOver overId ->
+            let
+                draggedId =
+                    case model.isDragging of
+                        Just id ->
+                            id
+
+                        Nothing ->
+                            Debug.crash "cannot be dragover without item being dragged!"
+
+                getIndex fn =
+                    model.todos
+                        |> List.findIndex fn
+                        |> Maybe.withDefault 0
+
+                overIndex =
+                    getIndex (\a -> a.id == overId)
+
+                draggedIndex =
+                    getIndex (\a -> a.id == draggedId)
+
+                todos =
+                    model.todos
+                        |> moveTo draggedIndex overIndex
+            in
+                { model | todos = todos } ! []
 
 
 findNextAction : Todos -> String
@@ -144,16 +211,32 @@ view { todos } =
 
 todosView : Todos -> Html Msg
 todosView todos =
-    div [] <| List.map (todoView <| findNextAction todos) todos
+    Keyed.ul [] <| List.map (todoView <| findNextAction todos) todos
 
 
-todoView : String -> Todo -> Html Msg
+todoView : String -> Todo -> ( String, Html Msg )
 todoView nextActionId { id, action, done } =
-    div []
-        [ input [ type' "checkbox", value <| toString done, onClick <| Toggle id ] []
-        , input [ type' "text", value action ] []
+    ( id
+    , li
+        [ draggable "true"
+        , on "dragstart" <| Json.succeed (StartDragging id)
+        , on "dragend" <| Json.succeed StopDragging
+        , on "dragenter" <| Json.succeed (IsOver id)
+        ]
+        [ input
+            [ type' "checkbox"
+            , onClick <| Toggle id
+            , value <| toString done
+            ]
+            []
+        , input
+            [ type' "text"
+            , value action
+            ]
+            []
         , nextActionView <| nextActionId == id
         ]
+    )
 
 
 nextActionView : Bool -> Html Msg
