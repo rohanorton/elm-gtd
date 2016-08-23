@@ -26,6 +26,7 @@ main =
 type alias Model =
     { todos : Todos
     , isDragging : Maybe String
+    , mouseOver : Bool
     }
 
 
@@ -70,6 +71,7 @@ init : ( Model, Cmd Msg )
 init =
     { todos = initialTodos
     , isDragging = Nothing
+    , mouseOver = False
     }
         ! []
 
@@ -82,7 +84,8 @@ type Msg
     = Toggle String
     | StartDragging String
     | StopDragging
-    | IsOver String
+    | DragOver String
+    | MouseOver Bool
 
 
 insertAt : Int -> a -> List a -> List a
@@ -129,12 +132,22 @@ update msg model =
                 { model | todos = newTodos } ! []
 
         StartDragging id ->
-            { model | isDragging = Just id } ! []
+            let
+                isDragging =
+                    if model.mouseOver then
+                        Nothing
+                    else
+                        Just id
+            in
+                { model | isDragging = isDragging } ! []
 
         StopDragging ->
             { model | isDragging = Nothing } ! []
 
-        IsOver overId ->
+        MouseOver mouseOver ->
+            { model | mouseOver = mouseOver } ! []
+
+        DragOver overId ->
             let
                 draggedId =
                     case model.isDragging of
@@ -205,23 +218,23 @@ find cond list =
 
 
 view : Model -> Html Msg
-view { todos } =
-    todosView todos
+view { todos, mouseOver } =
+    todosView todos mouseOver
 
 
-todosView : Todos -> Html Msg
-todosView todos =
-    Keyed.ul [] <| List.map (todoView <| findNextAction todos) todos
+todosView : Todos -> Bool -> Html Msg
+todosView todos mouseOver =
+    Keyed.ul [] <| List.map (todoView (findNextAction todos) mouseOver) todos
 
 
-todoView : String -> Todo -> ( String, Html Msg )
-todoView nextActionId { id, action, done } =
+todoView : String -> Bool -> Todo -> ( String, Html Msg )
+todoView nextActionId mouseOver { id, action, done } =
     ( id
     , li
         [ draggable "true"
-        , on "dragstart" <| Json.succeed (StartDragging id)
+        , onWithOptions "dragstart" { stopPropagation = mouseOver, preventDefault = mouseOver } <| Json.succeed (StartDragging id)
         , on "dragend" <| Json.succeed StopDragging
-        , on "dragenter" <| Json.succeed (IsOver id)
+        , on "dragenter" <| Json.succeed (DragOver id)
         ]
         [ input
             [ type' "checkbox"
@@ -232,6 +245,8 @@ todoView nextActionId { id, action, done } =
         , input
             [ type' "text"
             , value action
+            , on "mouseenter" <| Json.succeed <| MouseOver True
+            , on "mouseleave" <| Json.succeed <| MouseOver False
             ]
             []
         , nextActionView <| nextActionId == id
