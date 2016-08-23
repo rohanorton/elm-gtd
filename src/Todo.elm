@@ -178,7 +178,7 @@ update msg model =
 findNextAction : Todos -> String
 findNextAction todos =
     todos
-        |> find nextActionCandidate
+        |> List.find nextActionCandidate
         |> Maybe.withDefault defaultTodo
         |> .id
 
@@ -198,19 +198,6 @@ toggleDone id todos =
                 todo
         )
         todos
-
-
-find : (a -> Bool) -> List a -> Maybe a
-find cond list =
-    case list of
-        [] ->
-            Nothing
-
-        x :: xs ->
-            if cond x then
-                Just x
-            else
-                find cond xs
 
 
 
